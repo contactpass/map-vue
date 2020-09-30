@@ -1,5 +1,5 @@
 var config = {
-    apiUrl: "http://203.154.39.65/poc/",
+    apiUrl: "https://mobilysttech-poc.inet.co.th:9090/",
     apiKey:"y-xvunT-82HiKuCyINzNx4k-ClzOK7k5vriHRyvrECo"
 }
 

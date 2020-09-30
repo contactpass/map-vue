@@ -27,13 +27,13 @@ export default {
       ref_item_id: null,
       driver_position: null,
       driver_marker: null,
-      icon: {},
+      icon_driver: null,
       group: null,
       groupMarker: {
         data: [],
       },
-      receiverMarkup: svg.receiver.replace("${SEQ}", "2"),
-      deliverMarkup: svg.deliver.replace("${SEQ}", "1"),
+      receiverMarkup: svg.receiver,
+      deliverMarkup: svg.deliver,
       driverMarkup: svg.driver,
     };
   },
@@ -59,11 +59,7 @@ export default {
       this.ref_id = this.$route.query.reference_id;
       this.ref_item_id = this.$route.query.reference_item_id;
       // eslint-disable-next-line
-      this.icon.receiver = new H.map.Icon(this.receiverMarkup);
-      // eslint-disable-next-line
-      this.icon.deliver = new H.map.Icon(this.deliverMarkup);
-      // eslint-disable-next-line
-      this.icon.driver = new H.map.Icon(this.driverMarkup);
+      this.icon_driver = new H.map.Icon(this.driverMarkup);
     },
 
     initMap() {
@@ -122,7 +118,7 @@ export default {
         //add the buttons as this control's children
         this.addChild(this.newButton);
 
-        this.setAlignment(options["alignment"] || "left-bottom");
+        this.setAlignment(options["alignment"] || "left-center");
 
         this.options_ = options;
       };
@@ -162,7 +158,7 @@ export default {
               lat: element.lat,
               lng: element.lng,
             };
-            this.dropMarker(position, element.type);
+            this.dropMarker(position, element.seq, element.type, element.title, element.address);
           });
           this.setGroupMarker();
         }
@@ -236,23 +232,26 @@ export default {
 
     dropMarker(
       position,
-      type = null
-      // title = null,
-      // adddress = null
+      seq = '',
+      type = null,
+      title = '',
+      address = ''
     ) {
       var icon;
       if (type == "R") {
-        icon = this.icon.receiver;
+        // eslint-disable-next-line
+        icon = new H.map.Icon(this.receiverMarkup.replace("${SEQ}", seq));;
       } else if (type == "D") {
-        icon = this.icon.deliver;
+        // eslint-disable-next-line
+        icon = new H.map.Icon(this.deliverMarkup.replace("${SEQ}", seq));;
       } else {
-        icon = this.icon.driver;
+        icon = this.icon_driver;
       }
       // eslint-disable-next-line
       let marker = new H.map.Marker(position, { icon: icon });
       // var xy = this.map.geoToScreen(position);
       if (type == "R" || type == "D") {
-        marker.setData("<div><h3>AAAA</h3></div><div>asdsakdosakdo</div>");
+        marker.setData(`<div style="min-width: 20em !important; max-width: 5em;"><div><h4>${title}</h4></div>${address}</div>`);
         this.groupMarker.data.push(marker);
         let ui = this.ui;
         marker.addEventListener(
@@ -351,5 +350,9 @@ export default {
 #map {
   width: 100vw;
   height: 100vh;
+}
+
+#bubble_width {
+  min-width: 25em !important;
 }
 </style>
